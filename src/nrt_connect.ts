@@ -12,7 +12,7 @@ let bhspoolConfig = {
 };
 
 let nrt1poolConfig = {
-  host: "192.168.11.10",
+  host: "10.100.1.130", //"192.168.11.10",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
@@ -138,20 +138,68 @@ server.on("connection", sock => {
 
   sock.on("data", data => {
     let str: string = data.toString();
-    let splittted = str.split("\t", 3);
-    console.log("DATA " + sock.remoteAddress + ": " + splittted[1]);
-    if(splittted[0]==='nrt01'){
-        updatedb(nrt01pool,+splittted[2] ,splittted[1]);
+    let recdata = str.split("\t", 4);
+    // console.log("DATA " + sock.remoteAddress + ": " + recdata[1]);
+    if (recdata[0] === "nrt01" && recdata[3] == "update") {
+      updatedb(nrt01pool, +recdata[2], recdata[1]);
     }
-        
+    if (recdata[0] === "nrt01" && recdata[3] == "read") {
+      readdb(nrt01pool, sock);
+    }
+    if (recdata[0] === "nrt02" && recdata[3] == "update") {
+      updatedb(nrt02pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "nrt02" && recdata[3] == "read") {
+      readdb(nrt02pool, sock);
+    }
+    if (recdata[0] === "nrt03" && recdata[3] == "update") {
+      updatedb(nrt03pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "nrt03" && recdata[3] == "read") {
+      readdb(nrt03pool, sock);
+    }
+    if (recdata[0] === "nrt04" && recdata[3] == "update") {
+      updatedb(nrt04pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "nrt04" && recdata[3] == "read") {
+      readdb(nrt04pool, sock);
+    }
+    if (recdata[0] === "nrt05" && recdata[3] == "update") {
+      updatedb(nrt05pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "nrt05" && recdata[3] == "read") {
+      readdb(nrt05pool, sock);
+    }
+    if (recdata[0] === "nrt06" && recdata[3] == "update") {
+      updatedb(nrt06pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "nrt06" && recdata[3] == "read") {
+      readdb(nrt06pool, sock);
+    }
+    if (recdata[0] === "nrt01" && recdata[3] == "update") {
+      updatedb(nrt01pool, +recdata[2], recdata[1]);
+    }
+    if (recdata[0] === "max03" && recdata[3] == "read") {
+      readdb(max03pool, sock);
+    }
+    if (recdata[0] === "max04" && recdata[3] == "read") {
+      readdb(max04pool, sock);
+    }
+    if (recdata[0] === "max05" && recdata[3] == "read") {
+      readdb(max05pool, sock);
+    }
+    if (recdata[0] === "max06" && recdata[3] == "read") {
+      readdb(max06pool, sock);
+    }
 
-    sockets.forEach((sock, index, array) => {
-      console.log("write");
-      sock.write(
-        sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n"
-      );
-    });
+    // sockets.forEach((sock, index, array) => {
+    //   console.log("write");
+    //   sock.write(
+    //     sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n"
+    //   );
+    // });
   });
+
   sock.on("close", data => {
     let index = sockets.findIndex(o => {
       return (
@@ -165,16 +213,60 @@ server.on("connection", sock => {
 });
 
 async function updatedb(_pool: mysql.Pool, value: number, name: string) {
-  console.log("senData()");
+  console.log("updatedb()");
   await _pool.query(
-    "UPDATE hardware_inputs SET value = " + value + " where name =" + name,
+    "UPDATE hardware_inputs SET value = " +
+      value +
+      " where name ='" +
+      name +
+      "'",
 
     (err: mysql.QueryError, result: mysql.OkPacket) => {
       if (err) {
         console.log("error:%s", err);
       }
-      console.log('updated ' + result.changedRows + ' rows');
+      //console.log('updated ' + result.changedRows + ' rows');
       console.log("t_stamp=%s  ", new Date());
+    }
+  );
+}
+
+async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
+  console.log("readb()");
+  await _pool.query(
+    "select name as name, value as value from hardware_outputs",
+
+    (
+      err: mysql.QueryError,
+      rows: mysql.RowDataPacket[],
+      fields: mysql.FieldPacket
+    ) => {
+      if (err) {
+        console.log("error:%s", err);
+      }
+
+      let ret =
+        rows[0]["name"] +
+        "\t" +
+        rows[0]["value"] +
+        "\t" +
+        rows[1]["name"] +
+        "\t" +
+        rows[1]["value"] +
+        "\t" +
+        rows[2]["name"] +
+        "\t" +
+        rows[2]["value"] +
+        "\t" +
+        rows[4]["name"] +
+        "\t" +
+        rows[4]["value"] +
+        "\t" +
+        rows[6]["name"] +
+        "\t" +
+        rows[6]["value"];
+      console.log("read status %s: t_stamp=%s  ", ret, new Date());
+      sockj.write(ret);
     }
   );
 }

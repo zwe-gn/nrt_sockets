@@ -172,8 +172,9 @@ server.on("connection", function (sock) {
         var str = data.toString();
         var splittted = str.split("\t", 3);
         console.log("DATA " + sock.remoteAddress + ": " + splittted[1]);
-        if (splittted[1] == 'nrt01')
+        if (splittted[0] === 'nrt01') {
             updatedb(nrt01pool, +splittted[2], splittted[1]);
+        }
         sockets.forEach(function (sock, index, array) {
             console.log("write");
             sock.write(sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n");
@@ -209,3 +210,4 @@ function updatedb(_pool, value, name) {
         });
     });
 }
+//# sourceMappingURL=nrt_connect.js.map
