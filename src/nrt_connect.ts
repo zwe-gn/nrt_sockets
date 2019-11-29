@@ -158,7 +158,7 @@ server.on("connection", sock => {
       });
       if (index !== -1) sockets.splice(index, 1);
       console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
-      
+
     });
    
   });
@@ -168,7 +168,7 @@ server.on("connection", sock => {
      console.log('senData()');
      await _pool.query(
         `SELECT ui_name as name, material_id `, 
-        ,
+        
         async (
           err: mysql.QueryError,
           rows: mysql.RowDataPacket[],
