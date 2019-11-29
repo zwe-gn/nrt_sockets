@@ -158,6 +158,7 @@ server.on("connection", sock => {
       });
       if (index !== -1) sockets.splice(index, 1);
       console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
+      
     });
    
   });
