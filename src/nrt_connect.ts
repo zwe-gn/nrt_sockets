@@ -12,7 +12,7 @@ let bhspoolConfig = {
 };
 
 let nrt1poolConfig = {
-  host: "10.100.1.130", //"192.168.11.10",
+  host: "192.168.11.10",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
@@ -80,7 +80,7 @@ let max3poolConfig = {
   connectionLimit: 10,
   queueLimit: 0
 };
- 
+
 let max4poolConfig = {
   host: "192.168.11.28",
   user: "nrt",
@@ -139,7 +139,7 @@ server.on("connection", sock => {
   sock.on("data", data => {
     let str: string = data.toString();
     let recdata = str.split("\t", 4);
-    // console.log("DATA " + sock.remoteAddress + ": " + recdata[1]);
+    console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
     if (recdata[0] === "nrt01" && recdata[3] == "update") {
       updatedb(nrt01pool, +recdata[2], recdata[1]);
     }
@@ -216,10 +216,10 @@ async function updatedb(_pool: mysql.Pool, value: number, name: string) {
   console.log("updatedb()");
   await _pool.query(
     "UPDATE hardware_inputs SET value = " +
-      value +
-      " where name ='" +
-      name +
-      "'",
+    value +
+    " where name ='" +
+    name +
+    "'",
 
     (err: mysql.QueryError, result: mysql.OkPacket) => {
       if (err) {
@@ -244,29 +244,31 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
       if (err) {
         console.log("error:%s", err);
       }
+      if (rows.length > 1) {
+        let ret =
+          rows[0]["name"] +
+          "\t" +
+          rows[0]["value"] +
+          "\t" +
+          rows[1]["name"] +
+          "\t" +
+          rows[1]["value"] +
+          "\t" +
+          rows[2]["name"] +
+          "\t" +
+          rows[2]["value"] +
+          "\t" +
+          rows[4]["name"] +
+          "\t" +
+          rows[4]["value"] +
+          "\t" +
+          rows[6]["name"] +
+          "\t" +
+          rows[6]["value"];
+        console.log("read status %s: t_stamp=%s  ", ret, new Date());
+        sockj.write(ret);
+      }
 
-      let ret =
-        rows[0]["name"] +
-        "\t" +
-        rows[0]["value"] +
-        "\t" +
-        rows[1]["name"] +
-        "\t" +
-        rows[1]["value"] +
-        "\t" +
-        rows[2]["name"] +
-        "\t" +
-        rows[2]["value"] +
-        "\t" +
-        rows[4]["name"] +
-        "\t" +
-        rows[4]["value"] +
-        "\t" +
-        rows[6]["name"] +
-        "\t" +
-        rows[6]["value"];
-      console.log("read status %s: t_stamp=%s  ", ret, new Date());
-      sockj.write(ret);
     }
   );
 }

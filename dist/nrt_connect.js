@@ -170,15 +170,65 @@ server.on("connection", function (sock) {
     sockets.push(sock);
     sock.on("data", function (data) {
         var str = data.toString();
-        var splittted = str.split("\t", 3);
-        console.log("DATA " + sock.remoteAddress + ": " + splittted[1]);
-        if (splittted[0] === 'nrt01') {
-            updatedb(nrt01pool, +splittted[2], splittted[1]);
+        var recdata = str.split("\t", 4);
+        console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
+        if (recdata[0] === "nrt01" && recdata[3] == "update") {
+            updatedb(nrt01pool, +recdata[2], recdata[1]);
         }
-        sockets.forEach(function (sock, index, array) {
-            console.log("write");
-            sock.write(sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n");
-        });
+        if (recdata[0] === "nrt01" && recdata[3] == "read") {
+            readdb(nrt01pool, sock);
+        }
+        if (recdata[0] === "nrt02" && recdata[3] == "update") {
+            updatedb(nrt02pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "nrt02" && recdata[3] == "read") {
+            readdb(nrt02pool, sock);
+        }
+        if (recdata[0] === "nrt03" && recdata[3] == "update") {
+            updatedb(nrt03pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "nrt03" && recdata[3] == "read") {
+            readdb(nrt03pool, sock);
+        }
+        if (recdata[0] === "nrt04" && recdata[3] == "update") {
+            updatedb(nrt04pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "nrt04" && recdata[3] == "read") {
+            readdb(nrt04pool, sock);
+        }
+        if (recdata[0] === "nrt05" && recdata[3] == "update") {
+            updatedb(nrt05pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "nrt05" && recdata[3] == "read") {
+            readdb(nrt05pool, sock);
+        }
+        if (recdata[0] === "nrt06" && recdata[3] == "update") {
+            updatedb(nrt06pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "nrt06" && recdata[3] == "read") {
+            readdb(nrt06pool, sock);
+        }
+        if (recdata[0] === "nrt01" && recdata[3] == "update") {
+            updatedb(nrt01pool, +recdata[2], recdata[1]);
+        }
+        if (recdata[0] === "max03" && recdata[3] == "read") {
+            readdb(max03pool, sock);
+        }
+        if (recdata[0] === "max04" && recdata[3] == "read") {
+            readdb(max04pool, sock);
+        }
+        if (recdata[0] === "max05" && recdata[3] == "read") {
+            readdb(max05pool, sock);
+        }
+        if (recdata[0] === "max06" && recdata[3] == "read") {
+            readdb(max06pool, sock);
+        }
+        // sockets.forEach((sock, index, array) => {
+        //   console.log("write");
+        //   sock.write(
+        //     sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n"
+        //   );
+        // });
     });
     sock.on("close", function (data) {
         var index = sockets.findIndex(function (o) {
@@ -195,13 +245,58 @@ function updatedb(_pool, value, name) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log("senData()");
-                    return [4 /*yield*/, _pool.query("UPDATE hardware_inputs SET value = " + value + " where name =" + name, function (err, result) {
+                    console.log("updatedb()");
+                    return [4 /*yield*/, _pool.query("UPDATE hardware_inputs SET value = " +
+                            value +
+                            " where name ='" +
+                            name +
+                            "'", function (err, result) {
                             if (err) {
                                 console.log("error:%s", err);
                             }
-                            console.log('updated ' + result.changedRows + ' rows');
+                            //console.log('updated ' + result.changedRows + ' rows');
                             console.log("t_stamp=%s  ", new Date());
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function readdb(_pool, sockj) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log("readb()");
+                    return [4 /*yield*/, _pool.query("select name as name, value as value from hardware_outputs", function (err, rows, fields) {
+                            if (err) {
+                                console.log("error:%s", err);
+                            }
+                            if (rows.length > 1) {
+                                var ret = rows[0]["name"] +
+                                    "\t" +
+                                    rows[0]["value"] +
+                                    "\t" +
+                                    rows[1]["name"] +
+                                    "\t" +
+                                    rows[1]["value"] +
+                                    "\t" +
+                                    rows[2]["name"] +
+                                    "\t" +
+                                    rows[2]["value"] +
+                                    "\t" +
+                                    rows[4]["name"] +
+                                    "\t" +
+                                    rows[4]["value"] +
+                                    "\t" +
+                                    rows[6]["name"] +
+                                    "\t" +
+                                    rows[6]["value"];
+                                console.log("read status %s: t_stamp=%s  ", ret, new Date());
+                                sockj.write(ret);
+                            }
                         })];
                 case 1:
                     _a.sent();
