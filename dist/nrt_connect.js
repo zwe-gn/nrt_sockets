@@ -147,16 +147,16 @@ var max6poolConfig = {
     connectionLimit: 10,
     queueLimit: 0
 };
-var nrt1pool = mysql.createPool(nrt1poolConfig);
-var nrt2pool = mysql.createPool(nrt2poolConfig);
-var nrt3pool = mysql.createPool(nrt3poolConfig);
-var nrt4pool = mysql.createPool(nrt4poolConfig);
-var nrt5pool = mysql.createPool(nrt5poolConfig);
-var nrt6pool = mysql.createPool(nrt6poolConfig);
-var max3pool = mysql.createPool(max3poolConfig);
-var max4pool = mysql.createPool(max4poolConfig);
-var max5pool = mysql.createPool(max5poolConfig);
-var max6pool = mysql.createPool(max6poolConfig);
+var nrt01pool = mysql.createPool(nrt1poolConfig);
+var nrt02pool = mysql.createPool(nrt2poolConfig);
+var nrt03pool = mysql.createPool(nrt3poolConfig);
+var nrt04pool = mysql.createPool(nrt4poolConfig);
+var nrt05pool = mysql.createPool(nrt5poolConfig);
+var nrt06pool = mysql.createPool(nrt6poolConfig);
+var max03pool = mysql.createPool(max3poolConfig);
+var max04pool = mysql.createPool(max4poolConfig);
+var max05pool = mysql.createPool(max5poolConfig);
+var max06pool = mysql.createPool(max6poolConfig);
 var bhspool = mysql.createPool(bhspoolConfig);
 var port = 7070;
 var host = "127.0.0.1";
@@ -169,9 +169,13 @@ server.on("connection", function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
     sockets.push(sock);
     sock.on("data", function (data) {
-        console.log("DATA " + sock.remoteAddress + ": " + data);
-        // Write the data back to all the connected, the client will receive it as data from the server
+        var str = data.toString();
+        var splittted = str.split("\t", 3);
+        console.log("DATA " + sock.remoteAddress + ": " + splittted[1]);
+        if (splittted[1] == 'nrt01')
+            updatedb(nrt01pool, +splittted[2], splittted[1]);
         sockets.forEach(function (sock, index, array) {
+            console.log("write");
             sock.write(sock.remoteAddress + ":" + sock.remotePort + " said " + data + "\n");
         });
     });
@@ -185,22 +189,19 @@ server.on("connection", function (sock) {
         console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
     });
 });
-function sendData(_pool, dbtable) {
+function updatedb(_pool, value, name) {
     return __awaiter(this, void 0, void 0, function () {
-        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log('senData()');
-                    return [4 /*yield*/, _pool.query("SELECT ui_name as name, material_id ", function (err, rows, fields) { return __awaiter(_this, void 0, void 0, function () {
-                            return __generator(this, function (_a) {
-                                if (err) {
-                                    console.log("error:%s", err);
-                                }
-                                console.log("t_stamp=%s  ", new Date());
-                                return [2 /*return*/];
-                            });
-                        }); })];
+                    console.log("senData()");
+                    return [4 /*yield*/, _pool.query("UPDATE hardware_inputs SET value = " + value + " where name =" + name, function (err, result) {
+                            if (err) {
+                                console.log("error:%s", err);
+                            }
+                            console.log('updated ' + result.changedRows + ' rows');
+                            console.log("t_stamp=%s  ", new Date());
+                        })];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
