@@ -173,52 +173,61 @@ server.on("connection", function (sock) {
         var recdata = str.split("\t", 4);
         console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
         if (recdata[0] === "nrt01" && recdata[3] == "update") {
-            updatedb(nrt01pool, +recdata[2], recdata[1]);
+            updatedb(nrt01pool, +recdata[2], recdata[1], 'nrt01');
         }
         if (recdata[0] === "nrt01" && recdata[3] == "read") {
             readdb(nrt01pool, sock);
         }
         if (recdata[0] === "nrt02" && recdata[3] == "update") {
-            updatedb(nrt02pool, +recdata[2], recdata[1]);
+            updatedb(nrt02pool, +recdata[2], recdata[1], 'nrt02');
         }
         if (recdata[0] === "nrt02" && recdata[3] == "read") {
             readdb(nrt02pool, sock);
         }
         if (recdata[0] === "nrt03" && recdata[3] == "update") {
-            updatedb(nrt03pool, +recdata[2], recdata[1]);
+            updatedb(nrt03pool, +recdata[2], recdata[1], 'nrt03');
         }
         if (recdata[0] === "nrt03" && recdata[3] == "read") {
             readdb(nrt03pool, sock);
         }
         if (recdata[0] === "nrt04" && recdata[3] == "update") {
-            updatedb(nrt04pool, +recdata[2], recdata[1]);
+            updatedb(nrt04pool, +recdata[2], recdata[1], 'nrt04');
         }
         if (recdata[0] === "nrt04" && recdata[3] == "read") {
             readdb(nrt04pool, sock);
         }
         if (recdata[0] === "nrt05" && recdata[3] == "update") {
-            updatedb(nrt05pool, +recdata[2], recdata[1]);
+            updatedb(nrt05pool, +recdata[2], recdata[1], 'nrt05');
         }
         if (recdata[0] === "nrt05" && recdata[3] == "read") {
             readdb(nrt05pool, sock);
         }
         if (recdata[0] === "nrt06" && recdata[3] == "update") {
-            updatedb(nrt06pool, +recdata[2], recdata[1]);
+            updatedb(nrt06pool, +recdata[2], recdata[1], 'nrt06');
         }
         if (recdata[0] === "nrt06" && recdata[3] == "read") {
             readdb(nrt06pool, sock);
         }
-        if (recdata[0] === "nrt01" && recdata[3] == "update") {
-            updatedb(nrt01pool, +recdata[2], recdata[1]);
+        if (recdata[0] === "max03" && recdata[3] == "update") {
+            updatedb(max03pool, +recdata[2], recdata[1], 'max03');
         }
         if (recdata[0] === "max03" && recdata[3] == "read") {
             readdb(max03pool, sock);
         }
+        if (recdata[0] === "max04" && recdata[3] == "update") {
+            updatedb(max04pool, +recdata[2], recdata[1], 'max04');
+        }
         if (recdata[0] === "max04" && recdata[3] == "read") {
             readdb(max04pool, sock);
         }
+        if (recdata[0] === "max05" && recdata[3] == "update") {
+            updatedb(max05pool, +recdata[2], recdata[1], 'max05');
+        }
         if (recdata[0] === "max05" && recdata[3] == "read") {
             readdb(max05pool, sock);
+        }
+        if (recdata[0] === "max06" && recdata[3] == "update") {
+            updatedb(max06pool, +recdata[2], recdata[1], 'max06');
         }
         if (recdata[0] === "max06" && recdata[3] == "read") {
             readdb(max06pool, sock);
@@ -240,7 +249,7 @@ server.on("connection", function (sock) {
         console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
     });
 });
-function updatedb(_pool, value, name) {
+function updatedb(_pool, value, name, mc) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -255,7 +264,7 @@ function updatedb(_pool, value, name) {
                                 console.log("error:%s", err);
                             }
                             //console.log('updated ' + result.changedRows + ' rows');
-                            console.log("t_stamp=%s  ", new Date());
+                            console.log("updated t_stamp=%s dev:%s name:%s value:%s ", new Date(), mc, name, value);
                         })];
                 case 1:
                     _a.sent();
@@ -294,7 +303,7 @@ function readdb(_pool, sockj) {
                                     rows[6]["name"] +
                                     "\t" +
                                     rows[6]["value"];
-                                // console.log("read status %s: t_stamp=%s  ", ret, new Date());
+                                //console.log("read status %s: t_stamp=%s  ", ret, new Date());
                                 sockj.write(ret);
                             }
                         })];
