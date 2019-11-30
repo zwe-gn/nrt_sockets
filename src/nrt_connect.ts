@@ -265,7 +265,7 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
           rows[6]["name"] +
           "\t" +
           rows[6]["value"];
-        console.log("read status %s: t_stamp=%s  ", ret, new Date());
+        // console.log("read status %s: t_stamp=%s  ", ret, new Date());
         sockj.write(ret);
       }
 

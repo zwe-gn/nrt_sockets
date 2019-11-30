@@ -294,7 +294,7 @@ function readdb(_pool, sockj) {
                                     rows[6]["name"] +
                                     "\t" +
                                     rows[6]["value"];
-                                console.log("read status %s: t_stamp=%s  ", ret, new Date());
+                                // console.log("read status %s: t_stamp=%s  ", ret, new Date());
                                 sockj.write(ret);
                             }
                         })];
