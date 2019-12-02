@@ -166,12 +166,12 @@ server.listen(port, host, function () {
 });
 var sockets = [];
 server.on("connection", function (sock) {
-    console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
+    //console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
     sockets.push(sock);
     sock.on("data", function (data) {
         var str = data.toString();
         var recdata = str.split("\t", 4);
-        console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
+        //console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
         if (recdata[0] === "nrt01" && recdata[3] == "update") {
             updatedb(nrt01pool, +recdata[2], recdata[1], 'nrt01');
         }
@@ -277,37 +277,38 @@ function readdb(_pool, sockj) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    console.log("readb()");
-                    return [4 /*yield*/, _pool.query("select name as name, value as value from hardware_outputs", function (err, rows, fields) {
-                            if (err) {
-                                console.log("error:%s", err);
-                            }
-                            if (rows.length > 1) {
-                                var ret = rows[0]["name"] +
-                                    "\t" +
-                                    rows[0]["value"] +
-                                    "\t" +
-                                    rows[1]["name"] +
-                                    "\t" +
-                                    rows[1]["value"] +
-                                    "\t" +
-                                    rows[2]["name"] +
-                                    "\t" +
-                                    rows[2]["value"] +
-                                    "\t" +
-                                    rows[4]["name"] +
-                                    "\t" +
-                                    rows[4]["value"] +
-                                    "\t" +
-                                    rows[6]["name"] +
-                                    "\t" +
-                                    rows[6]["value"];
-                                //console.log("read status %s: t_stamp=%s  ", ret, new Date());
-                                sockj.write(ret);
-                            }
-                        })];
+                case 0: 
+                //console.log("readb()");
+                return [4 /*yield*/, _pool.query("select name as name, value as value from hardware_outputs", function (err, rows, fields) {
+                        if (err) {
+                            console.log("error:%s", err);
+                        }
+                        if (rows.length > 1) {
+                            var ret = rows[0]["name"] +
+                                "\t" +
+                                rows[0]["value"] +
+                                "\t" +
+                                rows[1]["name"] +
+                                "\t" +
+                                rows[1]["value"] +
+                                "\t" +
+                                rows[2]["name"] +
+                                "\t" +
+                                rows[2]["value"] +
+                                "\t" +
+                                rows[4]["name"] +
+                                "\t" +
+                                rows[4]["value"] +
+                                "\t" +
+                                rows[6]["name"] +
+                                "\t" +
+                                rows[6]["value"];
+                            //console.log("read status %s: t_stamp=%s  ", ret, new Date());
+                            sockj.write(ret);
+                        }
+                    })];
                 case 1:
+                    //console.log("readb()");
                     _a.sent();
                     return [2 /*return*/];
             }

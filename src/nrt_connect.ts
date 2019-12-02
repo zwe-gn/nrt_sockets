@@ -133,13 +133,13 @@ server.listen(port, host, () => {
 let sockets: Socket[] = [];
 
 server.on("connection", sock => {
-  console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
+  //console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
   sockets.push(sock);
 
   sock.on("data", data => {
     let str: string = data.toString();
     let recdata = str.split("\t", 4);
-    console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
+    //console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
     if (recdata[0] === "nrt01" && recdata[3] == "update") {
       updatedb(nrt01pool, +recdata[2], recdata[1],'nrt01');
     }
@@ -241,7 +241,7 @@ async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:stri
 }
 
 async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
-  console.log("readb()");
+  //console.log("readb()");
   await _pool.query(
     "select name as name, value as value from hardware_outputs",
 
