@@ -239,15 +239,16 @@ server.on("connection", function (sock) {
         //   );
         // });
     });
-    sock.on("close", function (data) {
-        var index = sockets.findIndex(function (o) {
-            return (o.remoteAddress === sock.remoteAddress &&
-                o.remotePort === sock.remotePort);
-        });
-        if (index !== -1)
-            sockets.splice(index, 1);
-        console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
-    });
+    // sock.on("close", data => {
+    //   let index = sockets.findIndex(o => {
+    //     return (
+    //       o.remoteAddress === sock.remoteAddress &&
+    //       o.remotePort === sock.remotePort
+    //     );
+    //   });
+    //   if (index !== -1) sockets.splice(index, 1);
+    //   console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
+    // });
 });
 function updatedb(_pool, value, name, mc) {
     return __awaiter(this, void 0, void 0, function () {

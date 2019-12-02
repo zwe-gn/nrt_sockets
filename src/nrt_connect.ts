@@ -209,16 +209,16 @@ server.on("connection", sock => {
     // });
   });
 
-  sock.on("close", data => {
-    let index = sockets.findIndex(o => {
-      return (
-        o.remoteAddress === sock.remoteAddress &&
-        o.remotePort === sock.remotePort
-      );
-    });
-    if (index !== -1) sockets.splice(index, 1);
-    console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
-  });
+  // sock.on("close", data => {
+  //   let index = sockets.findIndex(o => {
+  //     return (
+  //       o.remoteAddress === sock.remoteAddress &&
+  //       o.remotePort === sock.remotePort
+  //     );
+  //   });
+  //   if (index !== -1) sockets.splice(index, 1);
+  //   console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
+  // });
 });
 
 async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:string) {
