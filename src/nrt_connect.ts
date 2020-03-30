@@ -136,7 +136,7 @@ let max5pool = mysql.createPool(max5poolConfig);
 let max4pool = mysql.createPool(max4poolConfig);
 let bhspool = mysql.createPool(bhspoolConfig);
 
-const port = 7070;
+const port = 12345;
 const host = "127.0.0.1";
 
 const server = net.createServer();
@@ -156,26 +156,38 @@ server.on("connection", sock => {
     if (recdata[0] === "nrt01" && recdata[3] == "update") {
       updatedb(nrt1pool, +recdata[2], recdata[1],'nrt01');
     }
+    if (recdata[0] === "nrt01" && recdata[3] == "watchdog") {
+      watchdog(nrt1pool,'nrt01');
+    }
     if (recdata[0] === "nrt01" && recdata[3] == "read") {
-      readdb(nrt1pool, sock);
+      readdb(nrt1pool, sock,'nrt01');
     }
     if (recdata[0] === "nrt02" && recdata[3] == "update") {
       updatedb(nrt2pool, +recdata[2], recdata[1],'nrt02');
     }
+    if (recdata[0] === "nrt02" && recdata[3] == "watchdog") {
+      watchdog(nrt2pool,'nrt02');
+    }
     if (recdata[0] === "nrt02" && recdata[3] == "read") {
-      readdb(nrt2pool, sock);
+      readdb(nrt2pool, sock,'nrt02');
     }
     if (recdata[0] === "nrt03" && recdata[3] == "update") {
       updatedb(nrt3pool, +recdata[2], recdata[1],'nrt03');
     }
+    if (recdata[0] === "nrt03" && recdata[3] == "watchdog") {
+      watchdog(nrt3pool,'nrt03');
+    }
     if (recdata[0] === "nrt03" && recdata[3] == "read") {
-      readdb(nrt3pool, sock);
+      readdb(nrt3pool, sock,'nrt03');
     }
     if (recdata[0] === "nrt04" && recdata[3] == "update") {
       updatedb(nrt4pool, +recdata[2], recdata[1],'nrt04');
     }
+    if (recdata[0] === "nrt04" && recdata[3] == "watchdog") {
+      watchdog(nrt4pool,'nrt04');
+    }
     if (recdata[0] === "nrt04" && recdata[3] == "read") {
-      readdb(nrt4pool, sock);
+      readdb(nrt4pool, sock,'nrt04');
     }
   /*   if (recdata[0] === "nrt05" && recdata[3] == "update") {
       updatedb(nrt05pool, +recdata[2], recdata[1],'nrt05');
@@ -192,32 +204,47 @@ server.on("connection", sock => {
     if (recdata[0] === "max03" && recdata[3] == "update") {
       updatedb(max3pool, +recdata[2], recdata[1],'max03');
     }
+    if (recdata[0] === "max03" && recdata[3] == "watchdog") {
+      watchdog(max3pool,'max03');
+    }
     if (recdata[0] === "max03" && recdata[3] == "read") {
-      readdb(max3pool, sock);
+      readdb(max3pool, sock,'max03');
     }
     if (recdata[0] === "max04" && recdata[3] == "update") {
       updatedb(max4pool, +recdata[2], recdata[1],'max04');
     }
+    if (recdata[0] === "max04" && recdata[3] == "watchdog") {
+      watchdog(max4pool,'max04');
+    }
     if (recdata[0] === "max04" && recdata[3] == "read") {
-      readdb(max4pool, sock);
+      readdb(max4pool, sock,'max04');
     }
     if (recdata[0] === "max05" && recdata[3] == "update") {
       updatedb(max5pool, +recdata[2], recdata[1],'max05');
     }
+    if (recdata[0] === "max05" && recdata[3] == "watchdog") {
+      watchdog(max5pool,'max05');
+    }
     if (recdata[0] === "max05" && recdata[3] == "read") {
-      readdb(max5pool, sock);
+      readdb(max5pool, sock,'max05');
     }
     if (recdata[0] === "max01" && recdata[3] == "update") {
       updatedb(max1pool, +recdata[2], recdata[1],'max01');
     }
+    if (recdata[0] === "max01" && recdata[3] == "watchdog") {
+      watchdog(max1pool,'max01');
+    }
     if (recdata[0] === "max01" && recdata[3] == "read") {
-      readdb(max1pool, sock);
+      readdb(max1pool, sock,'max01');
     }
     if (recdata[0] === "max02" && recdata[3] == "update") {
       updatedb(max2pool, +recdata[2], recdata[1],'max02');
     }
+    if (recdata[0] === "max02" && recdata[3] == "watchdog") {
+      watchdog(max2pool,'max02');
+    }
     if (recdata[0] === "max02" && recdata[3] == "read") {
-      readdb(max2pool, sock);
+      readdb(max2pool, sock,'max02');
     }
     
     // sockets.forEach((sock, index, array) => {
@@ -240,10 +267,12 @@ server.on("connection", sock => {
   // });
 });
 
-async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:string) {
+async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:string ) {
   console.log("updatedb()");
   await _pool.query(
-    "UPDATE hardware_inputs SET value = " +
+    "UPDATE " +
+    "hardware_inputs"  +
+    " SET value = " +
     value +
     " where name ='" +
     name +
@@ -259,7 +288,27 @@ async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:stri
   );
 }
 
-async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
+async function watchdog(_pool: mysql.Pool, mc:string) {
+  console.log("updatedb()");
+  await _pool.query(
+    "UPDATE " +
+    "hardware_outputs"  +
+    " SET value = 1" +    
+    " where name ='" +
+    "watchdog" +
+    "'",
+
+    (err: mysql.QueryError, result: mysql.OkPacket) => {
+      if (err) {
+        console.log("db:%s watchdog error:%s", mc, err);
+      }
+      //console.log('updated ' + result.changedRows + ' rows');
+      console.log("db:%s  watchdog t_stamp=%s ", mc, new Date());
+    }
+  );
+}
+
+async function readdb(_pool: mysql.Pool, sockj: net.Socket, mc:string) {
   //console.log("readb()");
   await _pool.query(
     "select name as name, value as value from hardware_outputs",
@@ -270,7 +319,7 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
       fields: mysql.FieldPacket
     ) => {
       if (err) {
-        console.log("readdb()  error:%s", err);
+        console.log("readdb() db=%s error:%s",mc, err);
       }
       if (rows.length > 1) {
         let ret =
@@ -293,7 +342,7 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
           rows[6]["name"] +
           "\t" +
           rows[6]["value"];
-       //console.log("read status %s: t_stamp=%s  ", ret, new Date());
+       console.log("read() db=%s   t_stamp=%s  ",mc, new Date());
         sockj.write(ret);
       }
 
