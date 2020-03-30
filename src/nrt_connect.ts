@@ -1,13 +1,14 @@
 import net, { Socket } from "net";
 import * as mysql from "mysql2/promise";
 
+
 let bhspoolConfig = {
   host: "localhost",
   user: "bhs",
   password: "bhs",
-  database: "db2118",
+  database: "db1",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -17,7 +18,7 @@ let nrt1poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -27,7 +28,7 @@ let nrt2poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -37,7 +38,7 @@ let nrt3poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
@@ -47,11 +48,11 @@ let nrt4poolConfig = {
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let nrt5poolConfig = {
+/* let nrt5poolConfig = {
   host: "192.168.11.28",
   user: "nrt",
   password: "nrt",
@@ -70,8 +71,18 @@ let nrt6poolConfig = {
   connectionLimit: 10,
   queueLimit: 0
 };
+ */
+let max1poolConfig = {
+  host: "192.168.11.24",
+  user: "nrt",
+  password: "nrt",
+  database: "nrt_controls",
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0
+};
 
-let max3poolConfig = {
+let max2poolConfig = {
   host: "192.168.11.26",
   user: "nrt",
   password: "nrt",
@@ -81,46 +92,48 @@ let max3poolConfig = {
   queueLimit: 0
 };
 
-let max4poolConfig = {
+let max3poolConfig = {
   host: "192.168.11.28",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let max5poolConfig = {
+let max4poolConfig = {
   host: "192.168.11.30",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let max6poolConfig = {
+let max5poolConfig = {
   host: "192.168.11.32",
   user: "nrt",
   password: "nrt",
   database: "nrt_controls",
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0
 };
 
-let nrt01pool = mysql.createPool(nrt1poolConfig);
-let nrt02pool = mysql.createPool(nrt2poolConfig);
-let nrt03pool = mysql.createPool(nrt3poolConfig);
-let nrt04pool = mysql.createPool(nrt4poolConfig);
-let nrt05pool = mysql.createPool(nrt5poolConfig);
-let nrt06pool = mysql.createPool(nrt6poolConfig);
-let max03pool = mysql.createPool(max3poolConfig);
-let max04pool = mysql.createPool(max4poolConfig);
-let max05pool = mysql.createPool(max5poolConfig);
-let max06pool = mysql.createPool(max6poolConfig);
+
+let nrt1pool = mysql.createPool(nrt1poolConfig);
+let nrt2pool = mysql.createPool(nrt2poolConfig);
+let nrt3pool = mysql.createPool(nrt3poolConfig);
+let nrt4pool = mysql.createPool(nrt4poolConfig);
+//let nrt5pool = mysql.createPool(nrt5poolConfig);
+//let nrt6pool = mysql.createPool(nrt6poolConfig);
+let max1pool = mysql.createPool(max1poolConfig);
+let max2pool = mysql.createPool(max2poolConfig);
+let max3pool = mysql.createPool(max3poolConfig);
+let max5pool = mysql.createPool(max5poolConfig);
+let max4pool = mysql.createPool(max4poolConfig);
 let bhspool = mysql.createPool(bhspoolConfig);
 
 const port = 7070;
@@ -141,30 +154,30 @@ server.on("connection", sock => {
     let recdata = str.split("\t", 4);
     //console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
     if (recdata[0] === "nrt01" && recdata[3] == "update") {
-      updatedb(nrt01pool, +recdata[2], recdata[1],'nrt01');
+      updatedb(nrt1pool, +recdata[2], recdata[1],'nrt01');
     }
     if (recdata[0] === "nrt01" && recdata[3] == "read") {
-      readdb(nrt01pool, sock);
+      readdb(nrt1pool, sock);
     }
     if (recdata[0] === "nrt02" && recdata[3] == "update") {
-      updatedb(nrt02pool, +recdata[2], recdata[1],'nrt02');
+      updatedb(nrt2pool, +recdata[2], recdata[1],'nrt02');
     }
     if (recdata[0] === "nrt02" && recdata[3] == "read") {
-      readdb(nrt02pool, sock);
+      readdb(nrt2pool, sock);
     }
     if (recdata[0] === "nrt03" && recdata[3] == "update") {
-      updatedb(nrt03pool, +recdata[2], recdata[1],'nrt03');
+      updatedb(nrt3pool, +recdata[2], recdata[1],'nrt03');
     }
     if (recdata[0] === "nrt03" && recdata[3] == "read") {
-      readdb(nrt03pool, sock);
+      readdb(nrt3pool, sock);
     }
     if (recdata[0] === "nrt04" && recdata[3] == "update") {
-      updatedb(nrt04pool, +recdata[2], recdata[1],'nrt04');
+      updatedb(nrt4pool, +recdata[2], recdata[1],'nrt04');
     }
     if (recdata[0] === "nrt04" && recdata[3] == "read") {
-      readdb(nrt04pool, sock);
+      readdb(nrt4pool, sock);
     }
-    if (recdata[0] === "nrt05" && recdata[3] == "update") {
+  /*   if (recdata[0] === "nrt05" && recdata[3] == "update") {
       updatedb(nrt05pool, +recdata[2], recdata[1],'nrt05');
     }
     if (recdata[0] === "nrt05" && recdata[3] == "read") {
@@ -174,31 +187,37 @@ server.on("connection", sock => {
       updatedb(nrt06pool, +recdata[2], recdata[1],'nrt06');
     }
     if (recdata[0] === "nrt06" && recdata[3] == "read") {
-      readdb(nrt06pool, sock);
-    }
+      readdb(nrt06pool, sock); 
+    }*/
     if (recdata[0] === "max03" && recdata[3] == "update") {
-      updatedb(max03pool, +recdata[2], recdata[1],'max03');
+      updatedb(max3pool, +recdata[2], recdata[1],'max03');
     }
     if (recdata[0] === "max03" && recdata[3] == "read") {
-      readdb(max03pool, sock);
+      readdb(max3pool, sock);
     }
     if (recdata[0] === "max04" && recdata[3] == "update") {
-      updatedb(max04pool, +recdata[2], recdata[1],'max04');
+      updatedb(max4pool, +recdata[2], recdata[1],'max04');
     }
     if (recdata[0] === "max04" && recdata[3] == "read") {
-      readdb(max04pool, sock);
+      readdb(max4pool, sock);
     }
     if (recdata[0] === "max05" && recdata[3] == "update") {
-      updatedb(max05pool, +recdata[2], recdata[1],'max05');
+      updatedb(max5pool, +recdata[2], recdata[1],'max05');
     }
     if (recdata[0] === "max05" && recdata[3] == "read") {
-      readdb(max05pool, sock);
+      readdb(max5pool, sock);
     }
-    if (recdata[0] === "max06" && recdata[3] == "update") {
-      updatedb(max06pool, +recdata[2], recdata[1],'max06');
+    if (recdata[0] === "max01" && recdata[3] == "update") {
+      updatedb(max1pool, +recdata[2], recdata[1],'max01');
     }
-    if (recdata[0] === "max06" && recdata[3] == "read") {
-      readdb(max06pool, sock);
+    if (recdata[0] === "max01" && recdata[3] == "read") {
+      readdb(max1pool, sock);
+    }
+    if (recdata[0] === "max02" && recdata[3] == "update") {
+      updatedb(max2pool, +recdata[2], recdata[1],'max02');
+    }
+    if (recdata[0] === "max02" && recdata[3] == "read") {
+      readdb(max2pool, sock);
     }
     
     // sockets.forEach((sock, index, array) => {
@@ -232,10 +251,10 @@ async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:stri
 
     (err: mysql.QueryError, result: mysql.OkPacket) => {
       if (err) {
-        console.log("error:%s", err);
+        console.log("db:%s error:%s", mc, err);
       }
       //console.log('updated ' + result.changedRows + ' rows');
-      console.log("updated t_stamp=%s dev:%s name:%s value:%s ", new Date(),mc,name,value);
+      console.log("db:%s  updated t_stamp=%s dev:%s name:%s value:%s ", mc, new Date(),mc,name,value);
     }
   );
 }
@@ -251,7 +270,7 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket) {
       fields: mysql.FieldPacket
     ) => {
       if (err) {
-        console.log("error:%s", err);
+        console.log("readdb()  error:%s", err);
       }
       if (rows.length > 1) {
         let ret =
