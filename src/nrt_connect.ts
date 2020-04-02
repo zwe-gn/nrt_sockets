@@ -136,7 +136,7 @@ let max5pool = mysql.createPool(max5poolConfig);
 let max4pool = mysql.createPool(max4poolConfig);
 let bhspool = mysql.createPool(bhspoolConfig);
 
-const port = 12345;
+const port = 9191;
 const host = "127.0.0.1";
 
 const server = net.createServer();
@@ -152,7 +152,7 @@ server.on("connection", sock => {
   sock.on("data", data => {
     let str: string = data.toString();
     let recdata = str.split("\t", 4);
-    //console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
+    console.log("DATA " + sock.remoteAddress + ": %s %s %s %s", recdata[0], recdata[1], recdata[2], recdata[3]);
     if (recdata[0] === "nrt01" && recdata[3] == "update") {
       updatedb(nrt1pool, +recdata[2], recdata[1],'nrt01');
     }
@@ -289,7 +289,7 @@ async function updatedb(_pool: mysql.Pool, value: number, name: string , mc:stri
 }
 
 async function watchdog(_pool: mysql.Pool, mc:string) {
-  console.log("updatedb()");
+  //console.log("updatedb()");
   await _pool.query(
     "UPDATE " +
     "hardware_outputs"  +
@@ -341,7 +341,11 @@ async function readdb(_pool: mysql.Pool, sockj: net.Socket, mc:string) {
           "\t" +
           rows[6]["name"] +
           "\t" +
-          rows[6]["value"];
+          rows[6]["value"]+
+          "\t" +
+          rows[7]["name"] +
+          "\t" +
+          rows[7]["value"];
        console.log("read() db=%s   t_stamp=%s  ",mc, new Date());
         sockj.write(ret);
       }
